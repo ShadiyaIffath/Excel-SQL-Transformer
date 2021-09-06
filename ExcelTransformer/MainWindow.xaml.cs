@@ -42,6 +42,12 @@ namespace ExcelTransformer
                 return;
             }
 
+            if (String.IsNullOrWhiteSpace(table_name.Text))
+            {
+                error.Content = ErrorMessages.TABLE_NAME_MISSING;
+                return;
+            }
+
             try
             {
                 if (!File.Exists(excel_file.Text))
@@ -49,16 +55,28 @@ namespace ExcelTransformer
                     error.Content = ErrorMessages.PATH_NOT_FOUND;
                     return;
                 }
+
+                TransformationDetails transformer = new TransformationDetails(excel_file.Text);
+                int rows = transformer.readHeaderRow();
+
+                if(rows != 0 && transformer.columns.Count != 0)
+                {
+                    QueryGenerator queryGenerator = new QueryGenerator(table_name.Text, transformer.columns);
+
+                    for (int i = 0; i < rows; i++)
+                    {
+                        transformer.readExcelSheet(i);
+                        if (input_query.IsChecked == true)
+                            sql_text.Text += queryGenerator.generateInsertQuery(transformer.data);
+                        else
+                            sql_text.Text += queryGenerator.generateUpdateQuery(transformer.data);
+                    }
+                }
+
             }
             catch (UnauthorizedAccessException)
             {
                 error.Content = ErrorMessages.NO_PERMISSION;
-                return;
-            }
-
-            if (String.IsNullOrWhiteSpace(table_name.Text))
-            {
-                error.Content = ErrorMessages.TABLE_NAME_MISSING;
                 return;
             }
         }
@@ -76,5 +94,6 @@ namespace ExcelTransformer
                 excel_file.Text = openFileDlg.FileName;
             }
         }
+
     }
 }

@@ -5,35 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExcelTransformer"
         mc:Ignorable="d"
-        Title="Excel Transformer" Height="391" Width="800">
-    <Grid Margin="0,0,0,173">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="11*"/>
-            <ColumnDefinition Width="22*"/>
-            <ColumnDefinition Width="106*"/>
-            <ColumnDefinition Width="112*"/>
-            <ColumnDefinition Width="314*"/>
-            <ColumnDefinition Width="39*"/>
-            <ColumnDefinition Width="196*"/>
-        </Grid.ColumnDefinitions>
-        <GroupBox Header="Transformation Details" HorizontalAlignment="Left" Margin="0,10,0,0" Width="800" Grid.ColumnSpan="7">
-            <Grid Height="178">
-                <RadioButton x:Name="input_query" Content="Input" HorizontalAlignment="Left" Margin="75,40,0,0" VerticalAlignment="Top"/>
-                <RadioButton x:Name="update_query" Content="Update" HorizontalAlignment="Left" Margin="201,40,0,0" VerticalAlignment="Top"/>
-                <Label x:Name="query_label" Content="Query Type" HorizontalAlignment="Left" Margin="41,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                <GridSplitter HorizontalAlignment="Left" Height="78" Margin="362,0,0,0" VerticalAlignment="Center" Width="2"/>
-                <TextBox x:Name="excel_file" HorizontalAlignment="Left" Margin="417,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="309"  Height="21"/>
-                <Button x:Name="attach_file_button" Content=" ... " HorizontalAlignment="Left" Margin="731,35,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.429,0.104" Height="21" Click="attach_file_button_Click"/>
-                <Label x:Name="attach_excel_label" Content="Excel Data File" HorizontalAlignment="Left" Margin="408,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                <Label x:Name="error" HorizontalAlignment="Left" Margin="417,59,0,0" VerticalAlignment="Top" FontSize="10" Foreground="#FFDE1C1C" RenderTransformOrigin="-0.18,0.132" Width="298" Height="28"/>
-                <Button x:Name="confirm_btn" Content="Generate" HorizontalAlignment="Left" Margin="688,139,0,0" VerticalAlignment="Top" Background="#FF0B30DA" Width="71" Foreground="White" Height="23" Click="confirm_btn_Click"/>
-                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="601,139,0,0" VerticalAlignment="Top" Width="71" Foreground="#FF0B30DA" Height="23" Click="cancel_btn_Click"/>
-                <Label Content="Table Name" HorizontalAlignment="Left" Margin="41,70,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                <TextBox x:Name="table_name" HorizontalAlignment="Left" Height="21" Margin="75,100,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="235"/>
+        Title="Excel Transformer" Height="431" Width="800">
+    <StackPanel>
+        <GroupBox Header="Transformation Details" Margin="0,10,0,0" Width="784" BorderBrush="#FF0B30DA">
+            <Grid Height="178" Margin="0,0,-12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="71*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="693*"/>
+                </Grid.ColumnDefinitions>
+                <RadioButton x:Name="input_query" Content="Input" HorizontalAlignment="Left" Margin="4,40,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Column="1"/>
+                <RadioButton x:Name="update_query" Content="Update" HorizontalAlignment="Left" Margin="110,40,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                <Label x:Name="query_label" Content="Query Type" HorizontalAlignment="Left" Margin="41,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Grid.ColumnSpan="3"/>
+                <GridSplitter HorizontalAlignment="Left" Height="78" Margin="271,0,0,0" VerticalAlignment="Center" Width="2" Grid.Column="2"/>
+                <TextBox x:Name="excel_file" HorizontalAlignment="Left" Margin="326,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="309"  Height="21" Grid.Column="2" IsEnabled="False"/>
+                <Button x:Name="attach_file_button" Content=" ... " HorizontalAlignment="Left" Margin="640,35,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.429,0.104" Height="21" Click="attach_file_button_Click" Grid.Column="2"/>
+                <Label x:Name="attach_excel_label" Content="Excel Data File" HorizontalAlignment="Left" Margin="317,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Grid.Column="2"/>
+                <Label x:Name="error" HorizontalAlignment="Left" Margin="326,59,0,0" VerticalAlignment="Top" FontSize="10" Foreground="#FFDE1C1C" RenderTransformOrigin="-0.18,0.132" Width="298" Height="28" Grid.Column="2"/>
+                <Button x:Name="confirm_btn" Content="Generate" HorizontalAlignment="Left" Margin="597,139,0,0" VerticalAlignment="Top" Background="#FF0B30DA" Width="71" Foreground="White" Height="23" Click="confirm_btn_Click" Grid.Column="2"/>
+                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="510,139,0,0" VerticalAlignment="Top" Width="71" Foreground="#FF0B30DA" Height="23" Click="cancel_btn_Click" Grid.Column="2"/>
+                <Label Content="Table Name" HorizontalAlignment="Left" Margin="41,70,0,0" VerticalAlignment="Top" FontWeight="Bold" Grid.ColumnSpan="3"/>
+                <TextBox x:Name="table_name" HorizontalAlignment="Left" Height="21" Margin="4,100,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="235" Grid.ColumnSpan="2" Grid.Column="1"/>
             </Grid>
         </GroupBox>
-        <TextBlock x:Name="output_textbox" Grid.ColumnSpan="7" HorizontalAlignment="Left" Height="55" Margin="10,255,0,0" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Width="776" Background="#FFDEDBDB"/>
-        <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="122,212,0,0" VerticalAlignment="Top" Height="25" Width="88"/>
+        <GroupBox Header="SQL" Height="197" Width="782" BorderBrush="#FF0B30DA"  Margin="0,10,0,20">
+            <TextBox x:Name="sql_text" HorizontalAlignment="Left" Height="166" Text="" TextWrapping="Wrap" Width="772" IsEnabled="False" Background="#FFEAE2E2" VerticalScrollBarVisibility="Visible" />
+        </GroupBox>
 
-    </Grid>
+    </StackPanel>
 </Window>
