@@ -6,25 +6,16 @@ namespace ExcelTransformer.Models
 {
     class QueryGenerator
     {
-        public string tableName { get; set; }
-
-        public List<string> columns { get; set; }
-
-        public QueryGenerator(string _tableName, List<string> _columns)
+        public static List<string> columns { get; set; }
+        public static string generateInsertQuery(string tableName, List<string> data)
         {
-            this.tableName = _tableName;
-            this.columns = _columns;
-        }
+            string query = "\nINSERT INTO " + tableName + " (";
 
-        public string generateInsertQuery(List<string> data)
-        {
-            string query = "INSERT INTO " + this.tableName + " (";
-
-            for(int i = 0; i < this.columns.Count -1; i++)
+            for(int i = 0; i < columns.Count -1; i++)
             {
-                query += this.columns[i] + ", ";
+                query += columns[i] + ", ";
             }
-            query += this.columns[this.columns.Count - 1] + " ) \n VALUES (";
+            query += columns[columns.Count - 1] + " ) \nVALUES (";
 
             for(int i =0; i < data.Count; i++)
             {
@@ -40,14 +31,37 @@ namespace ExcelTransformer.Models
                     query += "'" +data[i] + "'";
                 }
 
-                query += i < data.Count - 1 ? ", " : ");";
+                query += i < data.Count - 1 ? ", " : ");\n";
             }
             return query;
         }
 
-        public string generateUpdateQuery(List<string> data)
+        public static string generateUpdateQuery(string tableName, List<string> columns, List<string> data, string whereClause)
         {
-            return "";
+            string query = "\nUPDATE " + tableName + " SET \n" ;
+            for (int i = 0; i < data.Count; i++)
+            {
+                for (int j = 0; j < columns.Count; j++)
+                {
+                    query += columns[i] + " = ";
+
+                    if (int.TryParse(data[i], out int intTemp))
+                    {
+                        query += intTemp;
+                    }
+                    else if (double.TryParse(data[i], out double doubleTemp))
+                    {
+                        query += doubleTemp;
+                    }
+                    else
+                    {
+                        query += "'" + data[i] + "'";
+                    }
+
+                    query += j < columns.Count - 1 ? ", " : "\n"+ whereClause+" ;";
+                }
+            }
+            return query;
         }
     }
 }

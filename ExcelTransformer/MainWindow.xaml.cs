@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,6 +33,8 @@ namespace ExcelTransformer
             excel_file.Text = "";
             table_name.Text = "";
             error.Content = "";
+            sql_progress.Visibility = Visibility.Hidden;
+            sql_text.Text = "";
         }
 
         private void confirm_btn_Click(object sender, RoutedEventArgs e)
@@ -56,28 +59,55 @@ namespace ExcelTransformer
                     return;
                 }
 
-                TransformationDetails transformer = new TransformationDetails(excel_file.Text);
-                int rows = transformer.readHeaderRow();
-
-                if(rows != 0 && transformer.columns.Count != 0)
+                new Thread(() =>
                 {
-                    QueryGenerator queryGenerator = new QueryGenerator(table_name.Text, transformer.columns);
-
-                    for (int i = 0; i < rows; i++)
+                    int rows = 0;
+                    this.Dispatcher.Invoke((Action)(() =>
                     {
-                        transformer.readExcelSheet(i);
-                        if (input_query.IsChecked == true)
-                            sql_text.Text += queryGenerator.generateInsertQuery(transformer.data);
-                        else
-                            sql_text.Text += queryGenerator.generateUpdateQuery(transformer.data);
-                    }
-                }
+                        error.Content = "";
+                        TransformationDetails._filepath = excel_file.Text;
+                    }));
+                    rows = TransformationDetails.getRowCount() - 1;
+                    if (rows != 0)
+                    {
 
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            sql_progress.Maximum = rows - 1;
+                            sql_progress.Value = 0;
+                            sql_progress.Visibility = Visibility.Visible;
+                        }));
+                        QueryGenerator.columns = TransformationDetails.readExcelSheet(1);
+
+                        Parallel.For(2, rows, (i, pls) =>
+                        {
+                            var data = TransformationDetails.readExcelSheet(i);
+                            if (data.Count == 0)
+                            {
+                                throw new ValueUnavailableException();
+                            }
+                            this.Dispatcher.Invoke((Action)(() =>
+                            {
+                                if (input_query.IsChecked == true)
+                                    sql_text.Text += QueryGenerator.generateInsertQuery(table_name.Text, data);
+
+                                sql_progress.Value += 1;
+                            }));
+                        });
+                    }
+                    else
+                    {
+                        error.Content = ErrorMessages.RECORDS_NOT_FOUND;
+                    }
+                }).Start();
             }
             catch (UnauthorizedAccessException)
             {
                 error.Content = ErrorMessages.NO_PERMISSION;
-                return;
+            }
+            catch (ValueUnavailableException)
+            {
+                error.Content = ErrorMessages.RECORDS_NOT_FOUND;
             }
         }
 

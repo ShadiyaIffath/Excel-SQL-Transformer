@@ -4,6 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationIcon>Treetog-Junior-Document-excel.ico</ApplicationIcon>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

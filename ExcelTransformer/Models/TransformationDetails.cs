@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Office.Interop.Excel;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
@@ -8,60 +9,83 @@ namespace ExcelTransformer.Models
 {
     class TransformationDetails
     {
-        public int rowCount { get; set; }
-
-        public int colCount { get; set; }
-
-        public string filePath { get; set; }
 
         public List<string> columns { get; set; }
 
         public List<string> data { get; set; }
 
-        public TransformationDetails(string _filePath)
-        {
-            this.filePath = _filePath;
-            this.columns = new List<string>();
-        }
+        public static string _filepath { get; set; }
 
-
-        public int readHeaderRow()
+        public static int getRowCount()
         {
-            readExcelSheet(1);
-            return this.rowCount;
-        }
-
-        public void readExcelSheet(int _row)
-        {
+            
             Application excelApp = new Application();
-            if (excelApp != null)
+            if (excelApp == null)
             {
-                return;
+                return 0;
             }
-            Workbook excelBook = excelApp.Workbooks.Open(filePath);
+            string file = (string)_filepath.Clone();
+            Workbook excelBook = excelApp.Workbooks.Open(file);
 
-            Worksheet excelSheet = excelBook.Sheets[1];
+            Worksheet excelSheet = (Microsoft.Office.Interop.Excel.Worksheet)excelBook.Sheets[1];
             Range excelRange = excelSheet.UsedRange;
 
-            this.rowCount = excelRange.Rows.Count;
-            this.colCount = excelRange.Columns.Count;
-            this.data = new List<string>();
-           
-            for (int col = 1; col <= colCount; col++)
-            {
-                if (_row == 1)
-                {
-                    //Table Columns
-                    columns.Add(excelRange.Cells[_row, col].Value2.ToString());
-                }
-                else
-                {
-                    data.Add(excelRange.Cells[_row, col].Value2.ToString());
-                }
-            }
-            
+            var rowCount = excelRange.Rows.Count;
+
             excelApp.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+            return rowCount;
+        }
+
+        public static List<string> readExcelSheet(int _row)
+        {
+            
+            Application excelApp = new Application();
+            if (excelApp == null)
+            {
+                return null;
+            }
+            List<string> data = new List<string>();
+            string file = (string)_filepath.Clone();
+            try
+            {
+                Workbook excelBook = excelApp.Workbooks.Open(file);
+
+                Worksheet excelSheet = (Microsoft.Office.Interop.Excel.Worksheet)excelBook.Sheets[1];
+                Range excelRange = excelSheet.UsedRange;
+
+                var rowCount = excelRange.Rows.Count;
+                var colCount = excelRange.Columns.Count;
+
+                for (int col = 1; col <= colCount; col++)
+                {
+
+                    if (_row == 1)
+                    {
+                        //Table Columns
+                        var value = ((Microsoft.Office.Interop.Excel.Range)excelRange.Cells[_row, col]).Value2.ToString().Replace(" ", "_");
+                        data.Add(value);
+                    }
+                    else
+                    {
+                        var value = ((Microsoft.Office.Interop.Excel.Range)excelRange.Cells[_row, col]).Value2;
+                        data.Add(value != null? value.ToString() : "NULL");
+                    }
+                }
+            }
+             catch (Exception e)
+            {
+                if (e.InnerException != null)
+                {
+                    return null;
+                }
+            }
+            finally
+            {
+                excelApp.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+            }
+            return data;
         }
     }
 }

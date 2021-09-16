@@ -13,5 +13,6 @@ namespace ExcelTransformer.Models
         public const string NO_PERMISSION = "You have not provided access to read file.";
         public const string ERROR_OCCURED = "An error occured.";
         public const string APPLICATION_NOT_FOUND = "Application not found!";
+        public const string RECORDS_NOT_FOUND = "Excel contains no records!";
     }
 }
